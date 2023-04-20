@@ -80,7 +80,7 @@ func RealMain() error {
 	if err != nil {
 		return errors.Wrap(err, "failed to init untyped store")
 	}
-	defer untyped.CloseStore(db)
+	//defer untyped.CloseStore(db)
 
 	if conf.RestoreDatabaseFile != "" {
 		glog.Infof("Restoring from backup file %q into context %q", conf.RestoreDatabaseFile, kubeContext)

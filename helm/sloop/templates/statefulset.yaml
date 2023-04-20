@@ -29,8 +29,8 @@ spec:
       containers:
       - args:
         - --config=/sloopconfig/sloop.json
-        command:
-        - /sloop
+        #command:
+        #- /sloop
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: sloop

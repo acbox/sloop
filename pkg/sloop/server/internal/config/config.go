@@ -101,7 +101,7 @@ func registerFlags(fs *flag.FlagSet, config *SloopConfig) {
 	fs.StringVar(&config.DefaultNamespace, "default-namespace", config.DefaultNamespace, "Default UX filter namespace")
 	fs.IntVar(&config.DeletionBatchSize, "deletion-batch-size", config.DeletionBatchSize, "Size of batch for deletion")
 	fs.StringVar(&config.UseKubeContext, "context", config.UseKubeContext, "Use a specific kubernetes context")
-	fs.StringVar(&config.DisplayContext, "display-context", config.DisplayContext, "Use this to override the display context.  When running in k8s the context is empty string.  This lets you override that (mainly useful if you are running many copies of sloop on different clusters) ")
+	fs.StringVar(&config.DisplayContext, "display-context", "cluster", "Use this to override the display context.  When running in k8s the context is empty string.  This lets you override that (mainly useful if you are running many copies of sloop on different clusters) ")
 	fs.StringVar(&config.ApiServerHost, "apiserver-host", config.ApiServerHost, "Kubernetes API server endpoint")
 	fs.BoolVar(&config.WatchCrds, "watch-crds", config.WatchCrds, "Watch for activity for CRDs")
 	fs.DurationVar(&config.CrdRefreshInterval, "crd-refresh-interval", config.CrdRefreshInterval, "Frequency between CRD Informer refresh")

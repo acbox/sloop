@@ -28,14 +28,14 @@ service:
   type: ClusterIP
 ## Configure extra options for liveness and readiness probes
 livenessProbe:
-  enabled: true
+  enabled: false
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
   successThreshold: 1
 readinessProbe:
-  enabled: true
+  enabled: false
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
