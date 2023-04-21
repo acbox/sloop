@@ -8,12 +8,15 @@
 package ingress
 
 import (
+	//"runtime"
 	"context"
 	"encoding/json"
 	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
+	"bytes"
+	"strings"
 
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/ptypes"
@@ -32,6 +35,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
+	"github.com/diegoholiveira/jsonlogic/v3"
 )
 
 /*
@@ -304,6 +308,16 @@ func (i *kubeWatcherImpl) processUpdate(kind string, obj interface{}, watchResul
 	}
 	glog.V(99).Infof("processUpdate: obj json: %v", resourceJson)
 
+	filterResult, err := i.eventExcluded(kind, resourceJson)
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+	if filterResult {
+		glog.V(99).Infof("Event filtered out: %v", resourceJson)
+		return
+	}
+
 	kubeMetadata, err := kubeextractor.ExtractMetadata(resourceJson)
 	if err != nil || kubeMetadata.Namespace == "" {
 		// We are only grabbing namespace here for a prometheus metric, so if metadata extract fails we just log and continue
@@ -358,6 +372,23 @@ func (i *kubeWatcherImpl) refreshCrdInformers(masterURL string, kubeContext stri
 			glog.Errorf("Failed to refresh CRD informers: %v", err)
 		}
 	}
+}
+
+func (i *kubeWatcherImpl) eventExcluded(kind string, resourceJson string) (bool, error) {
+	filters := []string{`{"==": [ { "var": "metadata.namespace"}, "kube-system" ]}`}
+	for _, logic := range filters {
+		var result bytes.Buffer
+		err := jsonlogic.Apply(strings.NewReader(logic), strings.NewReader(resourceJson), &result)
+		if err != nil {
+			glog.Errorf(`Error evaluating event filtering rule "%s": %s`, logic, err)
+			continue
+		}
+	        resultBool := strings.Contains(result.String(), "true")
+		if resultBool {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func (i *kubeWatcherImpl) Stop() {
