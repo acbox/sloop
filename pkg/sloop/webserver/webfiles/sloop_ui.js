@@ -193,6 +193,15 @@ function render(result) {
 
 severity = new Map([["Normal",0],["Warning",1],["Error",2]]);
 
+function removeEmptyRows(array) {
+  return array.filter(obj => {
+    const changedatIsEmpty = obj.changedat === null || obj.changedat.length === 0;
+    const overlaysIsEmpty = obj.overlays === null || obj.overlays.length === 0;
+
+    return !(changedatIsEmpty && overlaysIsEmpty);
+  });
+}
+
 function processAndSortResources(result) {
     let viewOptions = result.view_options;
 
@@ -241,6 +250,7 @@ function processAndSortResources(result) {
             };
             return result
         }).sort(cmpFn);
+        data = removeEmptyRows(data)
         return data
     }
 }
